@@ -4,7 +4,7 @@ from tkinter import * #Imports all the submodules and packages within Tkinter
 class Timer():
     def __init__(self):
         #Attributes are initialised with each separate timer for the player
-        self.startTime = self.playerOneTime = self.playerTwoTime = 5 #Hardcoded value as the initial value is set to 5 Minutes in seconds
+        self.startTime = self.playerOneTime = self.playerTwoTime = 0 #Hardcoded value as the initial value is set to 5 Minutes in seconds
         self.minutes = self.seconds = 0 #Used for formatting into Minutes and Seconds
         self.running = False #Ensures that the timer runs perfectly
         self.currentPlayer = 1 #Attribute that changes state based on whose turn it is (using basic turn based logic that changes each time)
@@ -18,6 +18,16 @@ class Timer():
     #Switches the Player based on whose turn it is and switches each time
     def switchPlayer(self):
         self.currentPlayer = 1 if (self.currentPlayer == 2) else 2
+    
+    def setTimes(self):
+        self.playerOneTime = int(playerOneTimerOptionVar.get()) * 60
+        self.playerTwoTime = int(playerTwoTimerOptionVar.get()) * 60
+        
+        self.minutes, self.seconds = divmod(self.playerOneTime, 60)
+        playerOneTimer.config(text = f"{timer.minutes:02d}:{timer.seconds:02d}")
+        
+        self.minutes, self.seconds = divmod(self.playerTwoTime, 60)
+        playerTwoTimer.config(text = f"{timer.minutes:02d}:{timer.seconds:02d}")
     
     #The Function is called to update the time displayed on the interface for the user and when it switches between each player
     def updateTime(self):
@@ -51,6 +61,7 @@ def updatePlayer():
     
     else:
         timer.switchPlayer()
+    switchButton.config(text = "Switch")
 
 timer = Timer() # 1 Timer Object created for initally formatting the time before it can be used
 window = Tk() #Window Created
@@ -70,8 +81,18 @@ playerTwoLabel = Label(chessFrame, background = "white", foreground = "black", f
 playerOneTimer = Label(chessFrame, background = "white", foreground = "black", font = ("Verdana", 40, "bold"), text = f"{timer.minutes:02d}:{timer.seconds:02d}")
 playerTwoTimer = Label(chessFrame, background = "white", foreground = "black", font = ("Verdana", 40, "bold"), text = f"{timer.minutes:02d}:{timer.seconds:02d}")
 
+playerOneTimerOptionVar = StringVar()
+playerOneTimerOptionEntry = OptionMenu(chessFrame, playerOneTimerOptionVar, 1, 2, 5, 10, 15, 30)
+
+playerTwoTimerOptionVar = StringVar()
+playerTwoTimerOptionEntry = OptionMenu(chessFrame, playerTwoTimerOptionVar, 1, 2, 5, 10, 15, 30)
+
+titleFrame = Frame(window, highlightbackground = "black", highlightthickness = 2)
+text = Label(titleFrame, text = "Please select a time, it is in Minutes!")
+
 chessButtonFrame = Frame(window, background = "white", highlightbackground = "black", highlightthickness = 2)
-switchButton = Button(chessButtonFrame, text = "Switch", command = updatePlayer) #Creates the buttons that is used for the user to switch between different players
+switchButton = Button(chessButtonFrame, text = "Start", command = updatePlayer) #Creates the buttons that is used for the user to switch between different players
+submitButton = Button(chessButtonFrame, text = "Submit Time Options!", background = "black", foreground = "white", command = timer.setTimes)
 
 #Positions the Frames and Labels
 chessFrame.grid(row = 0, column = 0)
@@ -82,6 +103,13 @@ playerTwoLabel.grid(row = 0, column = 1, padx = 5, pady = 5)
 playerOneTimer.grid(row = 1, column = 0, padx = 5, pady = 5)
 playerTwoTimer.grid(row = 1, column = 1, padx = 5, pady = 5)
 
+playerOneTimerOptionEntry.grid(row = 2, column = 0, padx = 5, pady = 5)
+playerTwoTimerOptionEntry.grid(row = 2, column = 1, padx = 5, pady = 5)
+
+titleFrame.grid(row = 1, column = 0)
+text.grid(row = 1, column = 0, padx = 5, pady = 5)
+
 chessButtonFrame.grid(row = 2, column = 0)
 switchButton.grid(row = 2, column = 0, padx = 5, pady = 5)
+submitButton.grid(row = 2, column = 1, padx = 5, pady = 5)
 window.mainloop() #Event Driven Loop
